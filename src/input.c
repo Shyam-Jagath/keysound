@@ -17,11 +17,11 @@ struct device {
 struct device devices[MAX_DEVICES];
 int num_devices=0;
 
-int is_keyboard(struct libevdev *dev){
+static int is_keyboard(struct libevdev *dev){
     return libevdev_has_event_type(dev, EV_KEY);
 }
 
-void add_device(const char *path){
+static void add_device(const char *path){
     if(num_devices >= MAX_DEVICES){
         return;
     } 
@@ -52,7 +52,7 @@ void add_device(const char *path){
     num_devices++;
 }
 
-void remove_device(const char *path){
+static void remove_device(const char *path){
     for(int i=0;i<num_devices;i++){
         
      //this print statement is just for testing, later i'll add this into logs   
@@ -69,7 +69,7 @@ void remove_device(const char *path){
     }
 }
 
-void scan_existing_devices(){
+static void scan_existing_devices(){
     struct udev *udev = udev_new();
     struct udev_enumerate *enumerate=udev_enumerate_new(udev);
 
@@ -150,6 +150,7 @@ void input_start(void (*callback)(int)){
                     if(ev.type == EV_KEY && ev.value == 1){
                         //this print statement is just for testing, later i'll add logs
                         printf("key pressed: %d %s\n",ev.code,libevdev_event_code_get_name(EV_KEY, ev.code));
+                        callback(ev.code);
                     }
                 }
             }
