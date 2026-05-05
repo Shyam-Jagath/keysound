@@ -11,6 +11,7 @@
 #include <string.h>
 
 #define CONFIG_PATH ".config/keysound"
+#define SYSTEM_PACKS_PATH "/usr/share/keysound/soundpacks"
 #define CURRENT_LINK "current"
 
 volatile sig_atomic_t keep_running = 1;
@@ -102,7 +103,7 @@ void ensure_default_pack(){
             perror("error: Failed to create local default symlink");
         }
     } else {
-        link_to_any_random_soundpack(system_default, link_path);
+        link_to_any_random_soundpack(SYSTEM_PACKS_PATH, link_path);
     }
 }
 
