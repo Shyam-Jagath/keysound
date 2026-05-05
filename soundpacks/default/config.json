@@ -1,0 +1,11 @@
+{
+    "LETTER" : ["A.mp3","G.mp3","H.mp3"],
+    "NUMBER" : ["I.mp3","J.mp3"],
+    "SPACE" : ["SPACE.mp3"],
+    "ENTER" : ["ENTER.mp3"],
+    "MODIFIER" : ["BACKSPACE.mp3"],
+    "CONTROL" : ["Y.mp3"],
+    "NAV" : ["V.mp3"],
+    "FUNCTION" : ["K.mp3"],
+    "LOCK" : ["CAPS LOCK.mp3"]
+}
