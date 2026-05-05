@@ -108,6 +108,10 @@ void input_start(void (*callback)(int)){
 
     scan_existing_devices();
 
+    if (num_devices == 0) {
+        fprintf(stderr, "WARNING: No input devices found! Are you sure you added your user to the 'input' group and logged back in?\n");
+    }
+
     while(keep_running){ // gracefully exit on signal
         struct pollfd pfds[MAX_DEVICES+1];
 

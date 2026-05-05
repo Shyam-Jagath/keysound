@@ -97,6 +97,8 @@ void load_audio_from_json(const char *config_path , const char *base_path){
         }
     }
 
+    cJSON_Delete(json);
+    free(data);
 }
 
 void audio_load_pack(const char *pack){
