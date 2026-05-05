@@ -81,18 +81,28 @@ void ensure_default_pack(){
     snprintf(link_path, sizeof(link_path), "%s/%s", base_path, CURRENT_LINK);
     snprintf(default_pack_path, sizeof(default_pack_path), "%s/default", base_path);
 
+    if (!dir_exists(base_path)) {
+        mkdir(base_path, 0755);
+    }
+
     if (access(link_path, F_OK) == 0){
         return; 
     }
 
-    if (dir_exists(default_pack_path)){
-        printf("First run detected: Linking 'current' to the 'default' soundpack.\n");
-        
+    const char *system_default = "/usr/share/keysound/soundpacks/default";
+    
+    if (dir_exists(system_default)) {
+        printf("first run detected: Linking 'current' to the system 'default' soundpack\n");
+        if (symlink(system_default, link_path) != 0) {
+            perror("error: Failed to create system default symlink");
+        }
+    } else if (dir_exists(default_pack_path)){
+        printf("first run detected: Linking 'current' to the local 'default' soundpack\n");
         if (symlink(default_pack_path, link_path) != 0) {
-            perror("Error: Failed to create default symlink");
+            perror("error: Failed to create local default symlink");
         }
     } else {
-        link_to_any_random_soundpack(base_path,link_path);
+        link_to_any_random_soundpack(system_default, link_path);
     }
 }
 
