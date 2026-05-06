@@ -81,7 +81,7 @@ void ensure_default_pack(){
 
     snprintf(base_path, sizeof(base_path), "%s/%s", home, CONFIG_PATH);
     snprintf(link_path, sizeof(link_path), "%s/%s", base_path, CURRENT_LINK);
-    snprintf(default_pack_path, sizeof(default_pack_path), "%s/default", base_path);
+    snprintf(default_pack_path, sizeof(default_pack_path), "%s/razer-green", base_path);
 
     if (!dir_exists(base_path)) {
         mkdir(base_path, 0755);
@@ -91,7 +91,7 @@ void ensure_default_pack(){
         return; 
     }
 
-    const char *system_default = "/usr/share/keysound/soundpacks/default";
+    const char *system_default = "/usr/share/keysound/soundpacks/razer-green";
     
     if (dir_exists(system_default)) {
         LOG_INFO("first run detected: Linking 'current' to the system 'default' soundpack");
