@@ -6,6 +6,7 @@
 #include <string.h>
 #include <poll.h>
 #include "input.h"
+#include "log.h"
 #define MAX_DEVICES 32
 
 struct device {
@@ -48,7 +49,7 @@ static void add_device(const char *path){
     strncpy(devices[num_devices].path, path, sizeof(devices[num_devices].path));
 
     //this print statement is just for testing, later i'll add this into logs
-    printf("added: %s %s\n", path, libevdev_get_name(dev));
+    LOG_DEBUG("added: %s %s", path, libevdev_get_name(dev));
     num_devices++;
 }
 
@@ -57,7 +58,7 @@ static void remove_device(const char *path){
         
      //this print statement is just for testing, later i'll add this into logs   
         if(strcmp(devices[i].path, path) == 0){
-            printf("removed: %s\n", path);
+            LOG_DEBUG("removed: %s", path);
 
             libevdev_free(devices[i].evdev);
             close(devices[i].fd);
@@ -109,7 +110,7 @@ void input_start(void (*callback)(int)){
     scan_existing_devices();
 
     if (num_devices == 0) {
-        fprintf(stderr, "WARNING: No input devices found! Are you sure you added your user to the 'input' group and logged back in?\n");
+        LOG_ERR("No input devices found! Are you sure you added your user to the 'input' group and logged back in?");
     }
 
     while(keep_running){ // gracefully exit on signal
@@ -153,7 +154,7 @@ void input_start(void (*callback)(int)){
 
                     if(ev.type == EV_KEY && ev.value == 1){
                         //this print statement is just for testing, later i'll add logs
-                        printf("key pressed: %d %s\n",ev.code,libevdev_event_code_get_name(EV_KEY, ev.code));
+                        LOG_DEBUG("key pressed: %d %s", ev.code, libevdev_event_code_get_name(EV_KEY, ev.code));
                         callback(ev.code);
                     }
                 }

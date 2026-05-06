@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <string.h>
+#include "log.h"
 
 #define CONFIG_PATH ".config/keysound"
 #define SYSTEM_PACKS_PATH "/usr/share/keysound/soundpacks"
@@ -56,10 +57,10 @@ void link_to_any_random_soundpack(const char *config_path , const char *link_pat
         snprintf(full_path, sizeof(full_path), "%s/%s", config_path, entry->d_name);
         
         if (dir_exists(full_path)){
-            printf("no 'default' folder found, falling back to pack '%s'\n", entry->d_name);
+            LOG_ERR("no 'default' folder found, falling back to pack '%s'", entry->d_name);
             
             if (symlink(full_path, link_path) != 0){
-                perror("error creating fallback symlink");
+                LOG_ERR("error creating fallback symlink");
             }
             closedir(dir);
             return; 
@@ -67,7 +68,7 @@ void link_to_any_random_soundpack(const char *config_path , const char *link_pat
     }
     closedir(dir);
 
-    printf("wtf?, the keysound directory is totally empty, please add soundpacks to %s\n", config_path);
+    LOG_ERR("wtf?, the keysound directory is totally empty, please add soundpacks to %s", config_path);
 }
 
 void ensure_default_pack(){
@@ -93,14 +94,14 @@ void ensure_default_pack(){
     const char *system_default = "/usr/share/keysound/soundpacks/default";
     
     if (dir_exists(system_default)) {
-        printf("first run detected: Linking 'current' to the system 'default' soundpack\n");
+        LOG_INFO("first run detected: Linking 'current' to the system 'default' soundpack");
         if (symlink(system_default, link_path) != 0) {
-            perror("error: Failed to create system default symlink");
+            LOG_ERR("Failed to create system default symlink");
         }
     } else if (dir_exists(default_pack_path)){
-        printf("first run detected: Linking 'current' to the local 'default' soundpack\n");
+        LOG_INFO("first run detected: Linking 'current' to the local 'default' soundpack");
         if (symlink(default_pack_path, link_path) != 0) {
-            perror("error: Failed to create local default symlink");
+            LOG_ERR("Failed to create local default symlink");
         }
     } else {
         link_to_any_random_soundpack(SYSTEM_PACKS_PATH, link_path);
@@ -116,17 +117,17 @@ int main(int argc, char *argv[]){
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
 
-    printf("Starting keysound daemon...\n");
+    LOG_INFO("Starting keysound daemon...");
     ensure_default_pack();
 
     audio_init();
 
     audio_load_pack("current");
 
-    printf("Listening for keyboard events...\n");
+    LOG_INFO("Listening for keyboard events...");
     input_start(on_key_pressed);
 
-    printf("Shutting down keysound daemon...\n");
+    LOG_INFO("Shutting down keysound daemon...");
     audio_cleanup();
 
     return 0;

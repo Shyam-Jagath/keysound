@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <string.h>
+#include "log.h"
 
 #define MAX_SOUNDS_PER_GROUP 4
 
@@ -23,7 +24,7 @@ static ma_engine engine;
 
 void audio_init(){
     if(ma_engine_init(NULL, &engine) != MA_SUCCESS){
-        printf("\nfailed to audio init\n");
+        LOG_ERR("failed to audio init");
         exit(1);
     }
     srand(time(NULL));
@@ -35,19 +36,19 @@ static void add_sound(KeyGroup group, const char *filepath){
     const char *group_name = group_to_string(group);
 
     if(g->count >= MAX_SOUNDS_PER_GROUP){
-        printf("Too many sounds in the group %s",group_name);
+        LOG_ERR("Too many sounds in the group %s", group_name);
         return;
     }
 
     ma_result result = ma_sound_init_from_file(&engine,filepath,0,NULL,NULL,&g->sounds[g->count]);
     if(result != MA_SUCCESS){
-        printf("Unable to load the audio at %s",filepath);
+        LOG_ERR("Unable to load the audio at %s", filepath);
         return;
     }
 
     g->count++;
 
-    printf("\nAudio at %s loaded successfully to group %s\n",filepath,group_name);
+    LOG_DEBUG("Audio at %s loaded successfully to group %s", filepath, group_name);
 }
 
 void load_audio_from_directory(const char *base_path){
@@ -81,7 +82,7 @@ void audio_load_pack(const char *pack){
              "%s/.config/keysound/%s/sounds",
              getenv("HOME"), pack);
 
-    printf("\n%s <- base path\n", base_path);
+    LOG_DEBUG("%s <- base path", base_path);
     load_audio_from_directory(base_path);
 }
 
@@ -111,5 +112,5 @@ void audio_cleanup(){
 
     ma_engine_uninit(&engine);
 
-    printf("Audio cleanup done\n");
+    LOG_INFO("Audio cleanup done");
 }
